@@ -3,6 +3,8 @@ import Container from '@/components/Container';
 import { GameProps } from "@/utils/types/game";
 import Link from 'next/link';
 import { BsArrowRightSquare } from 'react-icons/bs'
+import { Search } from "@/components/Search";
+import { GameCard } from "@/components/GameCard";
 
 
 async function getGameDay() {
@@ -16,9 +18,22 @@ async function getGameDay() {
   }
 }
 
+
+async function getGames() {
+  try {
+    const games = await fetch(' https://sujeitoprogramador.com/next-api/?api=games', { next: { revalidate: 360 } })
+    return games.json()
+
+  } catch (Err) {
+    throw new Error("Failed to fetch data");
+  }
+}
+
 export default async function Home() {
 
   const jogoDoDia: GameProps = await getGameDay();
+
+  const jogos: GameProps[] = await getGames();
 
   console.log(jogoDoDia);
   return (
@@ -41,6 +56,26 @@ export default async function Home() {
           </div>
         </section>
 
+        <Search />
+
+
+
+        <section className="w-full">
+          <h2 className="font-bold mb-5 mt-8">Jogos para conhecer:</h2>
+          <div className="grid gap-7 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+            {jogos.map((item) =>
+
+            (
+
+              <GameCard key={item.id} dataGame={item} />
+
+
+            ))
+            }
+          </div>
+        </section>
+
+        <br /><br /><br /><br /><br />
       </Container>
     </main>
 
